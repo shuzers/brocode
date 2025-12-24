@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Clipboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>Online Clipboard</h1>
+    <div class="header-buttons">
+      <button id="theme-toggle" aria-label="Toggle Theme"><span class="theme-icon">🌙</span></button>
+      <button id="about-btn">About</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="main-content">
+      <div class="text-section">
+        <div class="mode-selector">
+          <label><input type="radio" name="mode" value="text" checked> Text</label>
+          <label><input type="radio" name="mode" value="file"> File</label>
+        </div>
+        <div id="input-container">
+          <textarea id="text-area" placeholder="Paste or type text here..."></textarea>
+          <input type="file" id="file-input" style="display: none;">
+        </div>
+        <button id="copy-btn" disabled>Copy</button>
+        <a id="download-btn" href="#" target="_blank" style="display: none;" class="btn">Download File</a>
+      </div>
+
+      <div class="code-section">
+        <label>Code</label>
+        <input id="code-input" type="text" maxlength="3" placeholder="ABC">
+        <button id="send-btn" disabled>Send</button>
+      </div>
+    </div>
+    <div id="status-message"></div>
+  </main>
+
+  <div id="about-modal" class="modal hidden">
+    <div class="modal-overlay" style="position:absolute;inset:0"></div>
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <h2>About</h2>
+      <p>Share text between devices instantly with a 3-letter code. No login required.</p>
+      <h3>How to Send</h3>
+      <p>Paste text -> Click Send -> Share the code (e.g., "A7X").</p>
+      <h3>How to Receive</h3>
+      <p>Enter code -> Text appears -> Click Copy.</p>
+    </div>
+  </div>
+  <!-- Supabase UMD CDN (v2 latest - drops .39.7 for auto-latest; stable) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Wait for DOM + script load, then init
+    document.addEventListener('DOMContentLoaded', function () {
+      const { createClient } = supabase;  // Global 'supabase' from UMD exposes createClient
+      window.supabase = createClient(
+        'https://qmxzgkibbsfcyzcdjmbf.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFteHpna2liYnNmY3l6Y2RqbWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1Njg3MDUsImV4cCI6MjA4MjE0NDcwNX0.XdONWIPIbzzuZk8RqAQQakfrmhZe_41r3Gsv4x29lMA'
+      );
+      console.log('Supabase initialized:', window.supabase);  // Debug: Check console
+    });
+  </script>
+  <script src="app.js"></script>
+</body>
+
+</html>
