@@ -72,7 +72,7 @@
         <span class="text-2xl pt-1"></span>
         <h1
           class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-400 dark:from-primary-500 dark:to-indigo-300">
-          Bro Code ?
+          Bro Code
         </h1>
       </div>
 
@@ -117,11 +117,11 @@
             placeholder="Paste your code or text here..."></textarea>
 
           <div id="file-input-wrapper"
-            class="hidden h-64 w-full rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 flex flex-col items-center justify-center text-slate-500 hover:border-primary-500 hover:bg-primary-50/50 dark:hover:bg-slate-800/50 transition-all cursor-pointer relative">
-            <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-            <div class="text-4xl mb-3">📂</div>
-            <p class="font-medium">Click to upload or drag file</p>
-            <p id="file-name-display" class="text-sm text-primary-500 mt-2 font-semibold hidden"></p>
+            class="hidden h-64 w-full rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/20 flex flex-col items-center justify-center text-slate-400 cursor-not-allowed select-none transition-all relative">
+            <input type="file" id="file-input" class="hidden" disabled> <!-- Hidden & Disabled -->
+            <div class="text-5xl mb-4 opacity-50">🚧</div>
+            <h3 class="text-xl font-bold text-slate-500 dark:text-slate-400">Coming Soon</h3>
+            <p class="text-sm font-medium text-slate-400 mt-1">File sharing is currently under maintenance.</p>
           </div>
 
           <button id="copy-btn"
