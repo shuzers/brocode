@@ -19,14 +19,14 @@
             primary: {
               50: '#eef2ff',
               100: '#e0e7ff',
-              500: '#6366f1', // Indigo
+              500: '#6366f1', 
               600: '#4f46e5',
               700: '#4338ca',
             },
             dark: {
-              bg: '#0f172a',    // Slate 900
-              card: '#1e293b',  // Slate 800
-              input: '#334155', // Slate 700
+              bg: '#0f172a',    
+              card: '#1e293b',  
+              input: '#334155', 
             }
           }
         }
@@ -49,7 +49,7 @@
       }
     }
     
-    /* Custom scrollbar */
+    
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -65,7 +65,7 @@
 <body
   class="bg-slate-50 text-slate-800 dark:bg-dark-bg dark:text-slate-200 min-h-screen flex flex-col transition-colors duration-300">
 
-  <!-- Header -->
+  
   <header class="glass sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -86,14 +86,14 @@
     </div>
   </header>
 
-  <!-- Main Content -->
+  
   <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
 
     <div class="flex flex-col md:flex-row gap-6 h-full">
 
-      <!-- Input Section -->
+     
       <div class="flex-1 flex flex-col gap-4">
-        <!-- Mode Toggle -->
+        
         <div class="p-1.5 bg-slate-200 dark:bg-slate-800 rounded-xl inline-flex w-fit self-start mode-selector">
           <label class="cursor-pointer">
             <input type="radio" name="mode" value="text" class="peer sr-only" checked>
@@ -111,7 +111,7 @@
           </label>
         </div>
 
-        <!-- Input Container -->
+        
         <div id="input-container" class="relative group flex-1 flex flex-col">
           <textarea id="text-area" class="input-base flex-1 min-h-[300px] resize-y font-mono text-sm leading-relaxed"
             placeholder="Paste your code or text here..."></textarea>
@@ -134,7 +134,7 @@
         <a id="download-btn" href="#" target="_blank" class="hidden btn-primary text-center">Download File</a>
       </div>
 
-      <!-- Code/Action Section -->
+      
       <div class="md:w-80 flex flex-col gap-4">
         <div
           class="p-6 rounded-2xl bg-white dark:bg-dark-card shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 flex flex-col gap-4 sticky top-24">
@@ -157,15 +157,13 @@
 
     </div>
 
-    <!-- Status Toast -->
+
     <div id="status-message"
       class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-sm flex items-center gap-2">
-      <!-- Injected by JS -->
     </div>
 
   </main>
 
-  <!-- About Modal -->
   <div id="about-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
     <div class="modal-overlay absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="modal-backdrop"></div>
     <div

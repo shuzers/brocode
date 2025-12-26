@@ -1,7 +1,6 @@
-// App State
 const state = {
-  mode: 'idle', // idle | send | retrieve
-  inputType: 'text', // text | file
+  mode: 'idle', 
+  inputType: 'text',
   theme: localStorage.getItem('clipboard_theme') || 'light',
   text: '',
   file: null,
@@ -21,7 +20,7 @@ const els = {
   modes: document.querySelectorAll('input[name="mode"]')
 };
 
-// Init
+// init
 document.addEventListener('DOMContentLoaded', () => {
   if (state.theme === 'dark') document.documentElement.classList.add('dark');
   else document.documentElement.classList.remove('dark');
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
   els.theme.querySelector('.theme-icon').textContent = state.theme === 'dark' ? '☀️' : '🌙';
   updateUI();
 
-  // Listeners
   els.text.addEventListener('input', (e) => {
     state.text = e.target.value;
     checkSendState();
@@ -37,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   els.fileIn.addEventListener('change', (e) => {
     state.file = e.target.files[0];
-    // Update file display name
     const nameDisplay = document.getElementById('file-name-display');
     if (state.file) {
       nameDisplay.textContent = state.file.name;
@@ -66,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function checkSendState() {
-  if (state.code.length === 3) return; // Keep in retrieve mode or partial
+  if (state.code.length === 3) return; 
 
   const hasContent = state.inputType === 'text' ? !!state.text.trim() : !!state.file;
   state.mode = hasContent ? 'send' : 'idle';
@@ -82,7 +79,7 @@ function handleCodeInput(e) {
   else checkSendState();
 }
 
-// Supabase Logic
+
 async function handleSend() {
   if (!navigator.onLine) {
     showStatus('Offline—check connection!', 'error');
@@ -108,7 +105,6 @@ async function handleSend() {
       insertData.content = state.text;
     } else {
       const file = state.file;
-      // 2MB Limit Check
       if (file.size > 2 * 1024 * 1024) {
         showStatus('File too large (Max 2MB)', 'error');
         els.send.disabled = false;
@@ -129,10 +125,9 @@ async function handleSend() {
 
     els.code.value = code;
     showStatus(`Saved! Code: ${code}`, 'success');
-    state.mode = 'idle'; // Reset after send
+    state.mode = 'idle'; 
 
 
-    // Clear inputs
     if (state.inputType === 'text') {
       state.text = '';
       els.text.value = '';
@@ -172,7 +167,7 @@ async function generateUniqueCode() {
 
 async function retrieveContent(code) {
   state.mode = 'retrieve';
-  updateUI(); // Lock inputs
+  updateUI(); 
   showStatus('Retrieving...', 'info');
 
   try {
@@ -184,30 +179,23 @@ async function retrieveContent(code) {
       await supabase.from('clips').delete().eq('code', code); // Cleanup expired
       throw new Error('Code expired');
     }
-
-    // Display Content
     if (data.type === 'text') {
       els.text.value = data.content;
       state.text = data.content;
-      state.inputType = 'text'; // Switch to text view
+      state.inputType = 'text'; 
     } else {
-      state.inputType = 'file'; // Switch to file view
+      state.inputType = 'file'; 
       els.download.href = data.url;
       els.download.download = data.filename || 'download';
       els.download.textContent = `Download ${data.filename}`;
-      state.file = { name: data.filename }; // Mock for UI state
+      state.file = { name: data.filename }; 
     }
 
-    // Delete ONLY if it's a file (Burn on read for files)
     if (data.type === 'file') {
       await supabase.from('clips').delete().eq('code', code);
     }
 
-    // Cleanup storage if file
     if (data.type === 'file') {
-      // Note: Storage cleanup might be needed but Supabase doesn't auto-delete storage on row delete.
-      // We'll leave it for now or implement a cleanup triggers. 
-      // For a simple app, we can try to delete the folder/file.
       const path = `${code}/${data.filename}`;
       supabase.storage.from('files').remove([path]);
     }
@@ -246,7 +234,6 @@ function toggleTheme() {
 }
 
 function updateUI() {
-  // Input Visibility
   const fileInputWrapper = document.getElementById('file-input-wrapper');
 
   if (state.inputType === 'text') {
@@ -258,14 +245,11 @@ function updateUI() {
     els.modes[0].checked = true;
   } else {
     els.text.classList.add('hidden');
-    // Show file input only if NOT retrieving (i.e. sending or idle)
     if (state.mode === 'retrieve') {
       fileInputWrapper.classList.add('hidden');
     } else {
       fileInputWrapper.classList.remove('hidden');
     }
-
-    // Show download button only if RETRIEVING
     if (state.mode === 'retrieve') {
       els.download.classList.remove('hidden');
     } else {
@@ -276,19 +260,15 @@ function updateUI() {
     els.copy.classList.add('opacity-0', 'pointer-events-none');
     els.modes[1].checked = true;
   }
-
-  // Button States
   const isSend = state.mode === 'send';
   els.send.disabled = !isSend;
 
-  // Copy button enabled only if text content exists and we are in text mode
   els.copy.disabled = !state.text && state.inputType === 'text';
 }
 
 function showStatus(msg, type) {
   els.status.textContent = msg;
 
-  // Tailwind classes for different states
   const baseClasses = 'fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium shadow-2xl transform transition-all duration-300 z-50 text-sm flex items-center gap-2';
   const typeClasses = type === 'success'
     ? 'bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/80 dark:text-green-100 dark:border-green-800'
