@@ -95,7 +95,7 @@ async function handleSend() {
   try {
     const code = await generateUniqueCode();
     const now = new Date().toISOString();
-    const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
+    const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString(); // 15 minutes
 
     let insertData = {
       code,
@@ -108,6 +108,14 @@ async function handleSend() {
       insertData.content = state.text;
     } else {
       const file = state.file;
+      // 2MB Limit Check
+      if (file.size > 2 * 1024 * 1024) {
+        showStatus('File too large (Max 2MB)', 'error');
+        els.send.disabled = false;
+        els.send.textContent = 'Send';
+        return;
+      }
+
       const { error: upErr } = await supabase.storage.from('files').upload(`${code}/${file.name}`, file);
       if (upErr) throw upErr;
 
@@ -190,8 +198,10 @@ async function retrieveContent(code) {
       state.file = { name: data.filename }; // Mock for UI state
     }
 
-    // Delete after retrieve (Burn on read)
-    await supabase.from('clips').delete().eq('code', code);
+    // Delete ONLY if it's a file (Burn on read for files)
+    if (data.type === 'file') {
+      await supabase.from('clips').delete().eq('code', code);
+    }
 
     // Cleanup storage if file
     if (data.type === 'file') {
