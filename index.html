@@ -1,69 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bro Code ?</title>
-  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1', // Indigo
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            dark: {
+              bg: '#0f172a',    // Slate 900
+              card: '#1e293b',  // Slate 800
+              input: '#334155', // Slate 700
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass {
+        @apply bg-white/70 backdrop-blur-lg border border-white/20 dark:bg-slate-900/70 dark:border-slate-700/30;
+      }
+      .input-base {
+        @apply w-full p-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100;
+      }
+      .btn-primary {
+        @apply px-6 py-3 rounded-xl bg-primary-600 text-white font-medium hover:bg-primary-500 active:scale-95 transition-all duration-200 shadow-lg shadow-primary-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
+      }
+      .btn-secondary {
+        @apply px-4 py-2 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-all duration-200;
+      }
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      @apply bg-transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      @apply bg-slate-300 dark:bg-slate-600 rounded-full;
+    }
+  </style>
 </head>
 
-<body>
-  <header>
-    <h1>Bro Code ?</h1>
-    <div class="header-buttons">
-      <button id="theme-toggle" aria-label="Toggle Theme"><span class="theme-icon">🌙</span></button>
-      <button id="about-btn">About</button>
+<body
+  class="bg-slate-50 text-slate-800 dark:bg-dark-bg dark:text-slate-200 min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- Header -->
+  <header class="glass sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl pt-1"></span>
+        <h1
+          class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-400 dark:from-primary-500 dark:to-indigo-300">
+          Bro Code
+        </h1>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          aria-label="Toggle Theme">
+          <span class="theme-icon text-xl">🌙</span>
+        </button>
+        <button id="about-btn" class="btn-secondary font-medium text-sm">About</button>
+      </div>
     </div>
   </header>
 
-  <main>
-    <div class="main-content">
-      <div class="text-section">
-        <div class="mode-selector">
-          <label><input type="radio" name="mode" value="text" checked> Text</label>
-          <label><input type="radio" name="mode" value="file"> File</label>
+  <!-- Main Content -->
+  <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
+
+    <div class="flex flex-col md:flex-row gap-6 h-full">
+
+      <!-- Input Section -->
+      <div class="flex-1 flex flex-col gap-4">
+        <!-- Mode Toggle -->
+        <div class="p-1.5 bg-slate-200 dark:bg-slate-800 rounded-xl inline-flex w-fit self-start mode-selector">
+          <label class="cursor-pointer">
+            <input type="radio" name="mode" value="text" class="peer sr-only" checked>
+            <span
+              class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 peer-checked:shadow-sm transition-all flex items-center gap-2">
+              <span>✍️</span> Text
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="mode" value="file" class="peer sr-only">
+            <span
+              class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 peer-checked:shadow-sm transition-all flex items-center gap-2">
+              <span>📁</span> File
+            </span>
+          </label>
         </div>
-        <div id="input-container">
-          <textarea id="text-area" placeholder="Paste or type text here..."></textarea>
-          <input type="file" id="file-input" style="display: none;">
+
+        <!-- Input Container -->
+        <div id="input-container" class="relative group flex-1 flex flex-col">
+          <textarea id="text-area" class="input-base flex-1 min-h-[300px] resize-y font-mono text-sm leading-relaxed"
+            placeholder="Paste your code or text here..."></textarea>
+
+          <div id="file-input-wrapper"
+            class="hidden h-64 w-full rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 flex flex-col items-center justify-center text-slate-500 hover:border-primary-500 hover:bg-primary-50/50 dark:hover:bg-slate-800/50 transition-all cursor-pointer relative">
+            <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+            <div class="text-4xl mb-3">📂</div>
+            <p class="font-medium">Click to upload or drag file</p>
+            <p id="file-name-display" class="text-sm text-primary-500 mt-2 font-semibold hidden"></p>
+          </div>
+
+          <button id="copy-btn"
+            class="absolute top-3 right-3 p-2 bg-slate-200/80 backdrop-blur hover:bg-white text-slate-700 rounded-lg shadow-sm text-xs font-semibold uppercase tracking-wide transition-all z-10 disabled:opacity-0"
+            disabled>
+            Copy
+          </button>
         </div>
-        <button id="copy-btn" disabled>Copy</button>
-        <a id="download-btn" href="#" target="_blank" style="display: none;" class="btn">Download File</a>
+
+        <a id="download-btn" href="#" target="_blank" class="hidden btn-primary text-center">Download File</a>
       </div>
 
-      <div class="code-section">
-        <label>Code</label>
-        <input id="code-input" type="text" maxlength="3" placeholder="ABC">
-        <button id="send-btn" disabled>Send</button>
+      <!-- Code/Action Section -->
+      <div class="md:w-80 flex flex-col gap-4">
+        <div
+          class="p-6 rounded-2xl bg-white dark:bg-dark-card shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 flex flex-col gap-4 sticky top-24">
+          <label class="text-sm font-bold uppercase text-slate-400 tracking-wider">Retrieval Code</label>
+
+          <div class="relative">
+            <input id="code-input" type="text" maxlength="3" placeholder="---"
+              class="w-full h-20 text-center text-5xl font-bold tracking-[0.5em] rounded-xl bg-slate-100 dark:bg-slate-900 border-2 border-transparent focus:border-primary-500 focus:bg-white dark:focus:bg-black transition-all outline-none uppercase text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-slate-700">
+          </div>
+
+          <p class="text-xs text-center text-slate-400">Enter a 3-digit code to receive</p>
+
+          <div class="h-px bg-slate-100 dark:bg-slate-700 my-2"></div>
+
+          <button id="send-btn" class="btn-primary w-full text-lg shadow-xl shadow-primary-500/20" disabled>
+            Send
+          </button>
+        </div>
       </div>
+
     </div>
-    <div id="status-message"></div>
+
+    <!-- Status Toast -->
+    <div id="status-message"
+      class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-sm flex items-center gap-2">
+      <!-- Injected by JS -->
+    </div>
+
   </main>
 
-  <div id="about-modal" class="modal hidden">
-    <div class="modal-overlay" style="position:absolute;inset:0"></div>
-    <div class="modal-content">
-      <button class="modal-close">&times;</button>
-      <h2>About</h2>
-      <p>This Was Created because i was too lazy to login to whatapp and share my code to a different office device and
-        so i just rawdogged and created a working prototype in a single day.</p>
-      <p>Working on it and gonna convert it to a browser extension becuse that sounds even easier than to just use an
-        extension rather than opening a website everytime. </p>
-      <p>Have a Great Day - shuzers</p>
+  <!-- About Modal -->
+  <div id="about-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+    <div class="modal-overlay absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="modal-backdrop"></div>
+    <div
+      class="modal-content relative bg-white dark:bg-dark-card w-full max-w-md p-8 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700">
+      <button
+        class="modal-close absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl transition-colors">&times;</button>
+
+      <h2 class="text-2xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-500">
+        About Bro Code</h2>
+      <div class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>Created because I was too lazy to log in to WhatsApp just to share a snippet or file between devices. Built
+          to be a quick, login-free "clipboard in the cloud".</p>
+        <div
+          class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm border border-slate-100 dark:border-slate-700">
+          <p class="font-medium text-slate-800 dark:text-slate-200 mb-1">Future Plans:</p>
+          <p>Converting this into a browser extension for even faster access (working on it!)</p>
+        </div>
+        <p class="text-right text-sm font-medium text-primary-500">- shuzers</p>
+      </div>
     </div>
   </div>
-  <!-- Supabase UMD CDN (v2 latest - drops .39.7 for auto-latest; stable) -->
+
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Wait for DOM + script load, then init
     document.addEventListener('DOMContentLoaded', function () {
-      const { createClient } = supabase;  // Global 'supabase' from UMD exposes createClient
+      const { createClient } = supabase;
       window.supabase = createClient(
         'https://qmxzgkibbsfcyzcdjmbf.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFteHpna2liYnNmY3l6Y2RqbWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1Njg3MDUsImV4cCI6MjA4MjE0NDcwNX0.XdONWIPIbzzuZk8RqAQQakfrmhZe_41r3Gsv4x29lMA'
       );
-      console.log('Supabase initialized:', window.supabase);  // Debug: Check console
     });
   </script>
   <script src="app.js"></script>

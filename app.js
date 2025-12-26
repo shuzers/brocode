@@ -23,7 +23,9 @@ const els = {
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-  document.body.setAttribute('data-theme', state.theme);
+  if (state.theme === 'dark') document.documentElement.classList.add('dark');
+  else document.documentElement.classList.remove('dark');
+
   els.theme.querySelector('.theme-icon').textContent = state.theme === 'dark' ? '☀️' : '🌙';
   updateUI();
 
@@ -35,6 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   els.fileIn.addEventListener('change', (e) => {
     state.file = e.target.files[0];
+    // Update file display name
+    const nameDisplay = document.getElementById('file-name-display');
+    if (state.file) {
+      nameDisplay.textContent = state.file.name;
+      nameDisplay.classList.remove('hidden');
+    } else {
+      nameDisplay.classList.add('hidden');
+    }
     checkSendState();
   });
 
@@ -217,24 +227,43 @@ async function handleCopy() {
 
 function toggleTheme() {
   state.theme = state.theme === 'light' ? 'dark' : 'light';
-  document.body.setAttribute('data-theme', state.theme);
+
+  if (state.theme === 'dark') document.documentElement.classList.add('dark');
+  else document.documentElement.classList.remove('dark');
+
   els.theme.querySelector('.theme-icon').textContent = state.theme === 'dark' ? '☀️' : '🌙';
   localStorage.setItem('clipboard_theme', state.theme);
 }
 
 function updateUI() {
   // Input Visibility
+  const fileInputWrapper = document.getElementById('file-input-wrapper');
+
   if (state.inputType === 'text') {
-    els.text.style.display = 'block';
-    els.fileIn.style.display = 'none';
-    els.download.style.display = 'none';
-    els.copy.style.display = 'block'; // Show copy btn for text
+    els.text.classList.remove('hidden');
+    fileInputWrapper.classList.add('hidden');
+    els.download.classList.add('hidden');
+    els.copy.disabled = false;
+    els.copy.classList.remove('opacity-0', 'pointer-events-none');
     els.modes[0].checked = true;
   } else {
-    els.text.style.display = 'none';
-    els.fileIn.style.display = state.mode === 'retrieve' ? 'none' : 'block';
-    els.download.style.display = state.mode === 'retrieve' ? 'block' : 'none';
-    els.copy.style.display = 'none'; // Hide copy btn for file
+    els.text.classList.add('hidden');
+    // Show file input only if NOT retrieving (i.e. sending or idle)
+    if (state.mode === 'retrieve') {
+      fileInputWrapper.classList.add('hidden');
+    } else {
+      fileInputWrapper.classList.remove('hidden');
+    }
+
+    // Show download button only if RETRIEVING
+    if (state.mode === 'retrieve') {
+      els.download.classList.remove('hidden');
+    } else {
+      els.download.classList.add('hidden');
+    }
+
+    els.copy.disabled = true;
+    els.copy.classList.add('opacity-0', 'pointer-events-none');
     els.modes[1].checked = true;
   }
 
@@ -248,6 +277,20 @@ function updateUI() {
 
 function showStatus(msg, type) {
   els.status.textContent = msg;
-  els.status.className = `${type} visible`;
-  if (type === 'success') setTimeout(() => els.status.classList.remove('visible'), 3000);
+
+  // Tailwind classes for different states
+  const baseClasses = 'fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium shadow-2xl transform transition-all duration-300 z-50 text-sm flex items-center gap-2';
+  const typeClasses = type === 'success'
+    ? 'bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/80 dark:text-green-100 dark:border-green-800'
+    : type === 'error'
+      ? 'bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/80 dark:text-red-100 dark:border-red-800'
+      : 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/80 dark:text-blue-100 dark:border-blue-800';
+
+  els.status.className = `${baseClasses} ${typeClasses} opacity-100 translate-y-0`; // Visible state
+
+  if (type === 'success') {
+    setTimeout(() => {
+      els.status.className = `${baseClasses} opacity-0 translate-y-20`; // Hidden state
+    }, 3000);
+  }
 }
