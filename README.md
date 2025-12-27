@@ -13,7 +13,7 @@ Share text and files between devices using a 3-digit code.
 
 ## Notes
 - Items expire after 15 minutes.
-- File limit is 2MB.
+- File limit is 2MB. ( Work in progress , Temporarily Disabled )
 
 ## Tech Stack
 - Frontend - HTML / JS  / Tailwind CSS CDN
