@@ -17,16 +17,21 @@
           },
           colors: {
             primary: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              500: '#6366f1', 
-              600: '#4f46e5',
-              700: '#4338ca',
+              50: '#f7fee7',
+              100: '#E7FF9E',
+              200: '#d9f99d',
+              300: '#C2D685',
+              400: '#bef264',
+              500: '#98A869',
+              600: '#7d8c52',
+              700: '#535C39',
+              800: '#3f472b',
+              900: '#363d25',
             },
             dark: {
-              bg: '#0f172a',    
-              card: '#1e293b',  
-              input: '#334155', 
+              bg: '#171717',
+              card: '#262626',
+              input: '#404040',
             }
           }
         }
@@ -36,19 +41,18 @@
   <style type="text/tailwindcss">
     @layer utilities {
       .glass {
-        @apply bg-white/70 backdrop-blur-lg border border-white/20 dark:bg-slate-900/70 dark:border-slate-700/30;
+        @apply bg-white/70 backdrop-blur-lg border border-white/20 dark:bg-neutral-900/70 dark:border-neutral-700/30;
       }
       .input-base {
-        @apply w-full p-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100;
+        @apply w-full p-4 rounded-xl border border-neutral-200 bg-white shadow-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-100 dark:shadow-none;
       }
       .btn-primary {
-        @apply px-6 py-3 rounded-xl bg-primary-600 text-white font-medium hover:bg-primary-500 active:scale-95 transition-all duration-200 shadow-lg shadow-primary-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
+        @apply px-6 py-3 rounded-xl bg-primary-500 text-lg font-medium hover:bg-primary-600 active:scale-95 transition-all duration-200 shadow-lg shadow-primary-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
       }
       .btn-secondary {
-        @apply px-4 py-2 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-all duration-200;
+        @apply px-4 py-2 rounded-lg bg-neutral-200 text-neutral-700 font-medium hover:bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-600 transition-all duration-200;
       }
     }
-    
     
     ::-webkit-scrollbar {
       width: 8px;
@@ -57,75 +61,73 @@
       @apply bg-transparent;
     }
     ::-webkit-scrollbar-thumb {
-      @apply bg-slate-300 dark:bg-slate-600 rounded-full;
+      @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
     }
   </style>
 </head>
 
 <body
-  class="bg-slate-50 text-slate-800 dark:bg-dark-bg dark:text-slate-200 min-h-screen flex flex-col transition-colors duration-300">
+  class="bg-neutral-100 text-neutral-800 dark:bg-dark-bg dark:text-neutral-200 min-h-screen flex flex-col transition-colors duration-300">
 
-  
   <header class="glass sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <span class="text-2xl pt-1"></span>
+        <span class="text-3xl pt-1"></span>
         <h1
-          class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-400 dark:from-primary-500 dark:to-indigo-300">
+          class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-300 dark:from-primary-400 dark:to-primary-200">
           Bro Code
         </h1>
       </div>
 
       <div class="flex items-center gap-3">
-        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        <button id="theme-toggle"
+          class="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
           aria-label="Toggle Theme">
-          <span class="theme-icon text-xl">🌙</span>
+          <span class="theme-icon text-2xl">🌙</span>
         </button>
-        <button id="about-btn" class="btn-secondary font-medium text-sm">About</button>
+        <button id="about-btn" class="btn-secondary font-medium text-base">About</button>
+        <a href="https://microsoftedge.microsoft.com/addons/detail/bro-code-/fabilhfdamaalniodcpobfpbelpagiek"
+          target="_blank" class="btn-secondary font-medium text-base">Extension</a>
       </div>
     </div>
   </header>
 
-  
   <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
 
     <div class="flex flex-col md:flex-row gap-6 h-full">
 
-     
       <div class="flex-1 flex flex-col gap-4">
-        
-        <div class="p-1.5 bg-slate-200 dark:bg-slate-800 rounded-xl inline-flex w-fit self-start mode-selector">
+        <div class="p-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-xl inline-flex w-fit self-start mode-selector">
           <label class="cursor-pointer">
             <input type="radio" name="mode" value="text" class="peer sr-only" checked>
             <span
-              class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 peer-checked:shadow-sm transition-all flex items-center gap-2">
+              class="px-5 py-2.5 rounded-lg text-base font-medium text-neutral-600 dark:text-neutral-400 peer-checked:bg-white dark:peer-checked:bg-neutral-700 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 peer-checked:shadow-sm transition-all flex items-center gap-2">
               <span>✍️</span> Text
             </span>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="mode" value="file" class="peer sr-only">
             <span
-              class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 peer-checked:shadow-sm transition-all flex items-center gap-2">
+              class="px-5 py-2.5 rounded-lg text-base font-medium text-neutral-600 dark:text-neutral-400 peer-checked:bg-white dark:peer-checked:bg-neutral-700 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 peer-checked:shadow-sm transition-all flex items-center gap-2">
               <span>📁</span> File
             </span>
           </label>
         </div>
 
-        
         <div id="input-container" class="relative group flex-1 flex flex-col">
-          <textarea id="text-area" class="input-base flex-1 min-h-[300px] resize-y font-mono text-sm leading-relaxed"
+          <textarea id="text-area" class="input-base flex-1 min-h-[300px] resize-y font-mono text-base leading-relaxed"
             placeholder="Paste your code or text here..."></textarea>
 
           <div id="file-input-wrapper"
             class="hidden h-64 w-full rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/20 flex flex-col items-center justify-center text-slate-400 cursor-not-allowed select-none transition-all relative">
-            <input type="file" id="file-input" class="hidden" disabled> <!-- Hidden & Disabled -->
+            <input type="file" id="file-input" class="hidden" disabled>
             <div class="text-5xl mb-4 opacity-50">🚧</div>
             <h3 class="text-xl font-bold text-slate-500 dark:text-slate-400">Coming Soon</h3>
             <p class="text-sm font-medium text-slate-400 mt-1">File sharing is currently under maintenance.</p>
           </div>
 
           <button id="copy-btn"
-            class="absolute top-3 right-3 p-2 bg-slate-200/80 backdrop-blur hover:bg-white text-slate-700 rounded-lg shadow-sm text-xs font-semibold uppercase tracking-wide transition-all z-10 disabled:opacity-0"
+            class="absolute top-3 right-3 p-2 bg-neutral-200/80 backdrop-blur hover:bg-white text-neutral-700 rounded-lg shadow-sm text-xs font-semibold uppercase tracking-wide transition-all z-10 disabled:opacity-0"
             disabled>
             Copy
           </button>
@@ -134,20 +136,19 @@
         <a id="download-btn" href="#" target="_blank" class="hidden btn-primary text-center">Download File</a>
       </div>
 
-      
       <div class="md:w-80 flex flex-col gap-4">
         <div
-          class="p-6 rounded-2xl bg-white dark:bg-dark-card shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 flex flex-col gap-4 sticky top-24">
-          <label class="text-sm font-bold uppercase text-slate-400 tracking-wider">Retrieval Code</label>
+          class="p-6 rounded-2xl bg-white dark:bg-dark-card shadow-xl shadow-neutral-300/60 dark:shadow-none border border-neutral-100 dark:border-neutral-800 flex flex-col gap-4 sticky top-24">
+          <label class="text-base font-bold uppercase text-neutral-400 tracking-wider">Retrieval Code</label>
 
           <div class="relative">
             <input id="code-input" type="text" maxlength="3" placeholder="---"
-              class="w-full h-20 text-center text-5xl font-bold tracking-[0.5em] rounded-xl bg-slate-100 dark:bg-slate-900 border-2 border-transparent focus:border-primary-500 focus:bg-white dark:focus:bg-black transition-all outline-none uppercase text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-slate-700">
+              class="w-full h-20 text-center text-5xl font-bold tracking-[0.5em] rounded-xl bg-neutral-100 dark:bg-neutral-900 border-2 border-transparent focus:border-primary-500 focus:bg-white dark:focus:bg-black transition-all outline-none uppercase text-neutral-800 dark:text-white placeholder-neutral-300 dark:placeholder-neutral-700">
           </div>
 
-          <p class="text-xs text-center text-slate-400">Enter a 3-digit code to receive</p>
+          <p class="text-xs text-center text-neutral-400">Enter a 3-digit code to receive</p>
 
-          <div class="h-px bg-slate-100 dark:bg-slate-700 my-2"></div>
+          <div class="h-px bg-neutral-100 dark:bg-neutral-700 my-2"></div>
 
           <button id="send-btn" class="btn-primary w-full text-lg shadow-xl shadow-primary-500/20" disabled>
             Send
@@ -156,7 +157,6 @@
       </div>
 
     </div>
-
 
     <div id="status-message"
       class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-sm flex items-center gap-2">
@@ -171,22 +171,22 @@
       <button
         class="modal-close absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl transition-colors">&times;</button>
 
-      <h2 class="text-2xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-500">
+      <h2 class="text-2xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-yellow-500">
         About Bro Code</h2>
       <div class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed">
         <p>Created because I was too lazy to log in to WhatsApp just to share a snippet or file between devices. Built
-          to be a quick, login-free "clipboard in the cloud".</p>
+          to be a quick, login-free "clipboard in the cloud". The extension is ready and can be accessed from the
+          extension button.</p>
         <div
           class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm border border-slate-100 dark:border-slate-700">
           <p class="font-medium text-slate-800 dark:text-slate-200 mb-1">Future Plans:</p>
-          <p>Converting this into a browser extension for even faster access (working on it!)</p>
+          <p>Make the file sharing feature work (working on it!)</p>
         </div>
         <p class="text-right text-sm font-medium text-primary-500">- shuzers</p>
       </div>
     </div>
   </div>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
