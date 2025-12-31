@@ -229,7 +229,7 @@ function toggleTheme() {
   if (state.theme === 'dark') document.documentElement.classList.add('dark');
   else document.documentElement.classList.remove('dark');
 
-  els.theme.querySelector('.theme-icon').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+  els.theme.querySelector('.theme-icon').textContent = state.theme === 'dark' ? 'Light' : 'Dark';
   localStorage.setItem('clipboard_theme', state.theme);
 }
 
