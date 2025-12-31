@@ -155,7 +155,7 @@ async function handleSend() {
 }
 
 async function generateUniqueCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
   let code;
   while (true) {
     code = Array(3).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
