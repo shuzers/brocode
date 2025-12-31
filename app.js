@@ -1,5 +1,5 @@
 const state = {
-  mode: 'idle', 
+  mode: 'idle',
   inputType: 'text',
   theme: localStorage.getItem('clipboard_theme') || 'light',
   text: '',
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (state.theme === 'dark') document.documentElement.classList.add('dark');
   else document.documentElement.classList.remove('dark');
 
-  els.theme.querySelector('.theme-icon').textContent = state.theme === 'dark' ? 'Dark' : 'Light';
+
   updateUI();
 
   els.text.addEventListener('input', (e) => {
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function checkSendState() {
-  if (state.code.length === 3) return; 
+  if (state.code.length === 3) return;
 
   const hasContent = state.inputType === 'text' ? !!state.text.trim() : !!state.file;
   state.mode = hasContent ? 'send' : 'idle';
@@ -125,7 +125,7 @@ async function handleSend() {
 
     els.code.value = code;
     showStatus(`Saved! Code: ${code}`, 'success');
-    state.mode = 'idle'; 
+    state.mode = 'idle';
 
 
     if (state.inputType === 'text') {
@@ -167,7 +167,7 @@ async function generateUniqueCode() {
 
 async function retrieveContent(code) {
   state.mode = 'retrieve';
-  updateUI(); 
+  updateUI();
   showStatus('Retrieving...', 'info');
 
   try {
@@ -182,13 +182,13 @@ async function retrieveContent(code) {
     if (data.type === 'text') {
       els.text.value = data.content;
       state.text = data.content;
-      state.inputType = 'text'; 
+      state.inputType = 'text';
     } else {
-      state.inputType = 'file'; 
+      state.inputType = 'file';
       els.download.href = data.url;
       els.download.download = data.filename || 'download';
       els.download.textContent = `Download ${data.filename}`;
-      state.file = { name: data.filename }; 
+      state.file = { name: data.filename };
     }
 
     if (data.type === 'file') {
@@ -229,7 +229,7 @@ function toggleTheme() {
   if (state.theme === 'dark') document.documentElement.classList.add('dark');
   else document.documentElement.classList.remove('dark');
 
-  els.theme.querySelector('.theme-icon').textContent = state.theme === 'dark' ? 'Light' : 'Dark';
+
   localStorage.setItem('clipboard_theme', state.theme);
 }
 
