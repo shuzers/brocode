@@ -1,286 +1,440 @@
-const state = {
-  mode: 'idle',
-  inputType: 'text',
-  theme: localStorage.getItem('clipboard_theme') || 'light',
-  text: '',
-  file: null,
-  code: ''
-};
+// Configuration
+const WORKER_URL = 'https://brocode-worker.prolast1225.workers.dev'; // Replace with your Cloudflare Worker URL
+const ROOM_ID = 'default-room';
+const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }];
 
-const els = {
-  text: document.getElementById('text-area'),
-  fileIn: document.getElementById('file-input'),
-  copy: document.getElementById('copy-btn'),
-  download: document.getElementById('download-btn'),
-  code: document.getElementById('code-input'),
-  send: document.getElementById('send-btn'),
-  theme: document.getElementById('theme-toggle'),
-  status: document.getElementById('status-message'),
-  modal: document.getElementById('about-modal'),
-  modes: document.querySelectorAll('input[name="mode"]')
-};
+// State
+let mode = 'receiver'; // 'receiver' or 'sender'
+let peerId = generateId();
+let peerConnection = null;
+let dataChannel = null;
+let scanInterval = null;
 
-// init
-document.addEventListener('DOMContentLoaded', () => {
-  if (state.theme === 'dark') document.documentElement.classList.add('dark');
-  else document.documentElement.classList.remove('dark');
+// DOM Elements
+const modeToggle = document.getElementById('modeToggle');
+const modeIndicator = document.getElementById('modeText');
+const receiverView = document.getElementById('receiverView');
+const senderView = document.getElementById('senderView');
+const peerList = document.getElementById('peerList');
+const sendClipboard = document.getElementById('sendClipboard');
+const sendFile = document.getElementById('sendFile');
+const sendMessage = document.getElementById('sendMessage');
+const messageInput = document.getElementById('messageInput');
+const fileInput = document.getElementById('fileInput');
+const connectionStatus = document.getElementById('connectionStatus');
+const dataView = document.getElementById('dataView');
+const receivedData = document.getElementById('receivedData');
+const themeToggle = document.getElementById('themeToggle');
 
+// Initialize
+initTheme();
+startScanning();
 
-  updateUI();
-
-  els.text.addEventListener('input', (e) => {
-    state.text = e.target.value;
-    checkSendState();
-  });
-
-  els.fileIn.addEventListener('change', (e) => {
-    state.file = e.target.files[0];
-    const nameDisplay = document.getElementById('file-name-display');
-    if (state.file) {
-      nameDisplay.textContent = state.file.name;
-      nameDisplay.classList.remove('hidden');
-    } else {
-      nameDisplay.classList.add('hidden');
-    }
-    checkSendState();
-  });
-
-  els.modes.forEach(rb => rb.addEventListener('change', (e) => {
-    state.inputType = e.target.value;
-    updateUI();
-    checkSendState();
-  }));
-
-  els.code.addEventListener('input', handleCodeInput);
-  els.send.addEventListener('click', handleSend);
-  els.copy.addEventListener('click', handleCopy);
-  els.theme.addEventListener('click', toggleTheme);
-
-  document.getElementById('about-btn').addEventListener('click', () => els.modal.classList.remove('hidden'));
-  els.modal.querySelectorAll('.modal-close, .modal-overlay').forEach(el =>
-    el.addEventListener('click', () => els.modal.classList.add('hidden'))
-  );
-});
-
-function checkSendState() {
-  if (state.code.length === 3) return;
-
-  const hasContent = state.inputType === 'text' ? !!state.text.trim() : !!state.file;
-  state.mode = hasContent ? 'send' : 'idle';
-  updateUI();
-}
-
-function handleCodeInput(e) {
-  let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().substring(0, 3);
-  e.target.value = val;
-  state.code = val;
-
-  if (val.length === 3) retrieveContent(val);
-  else checkSendState();
-}
-
-
-async function handleSend() {
-  if (!navigator.onLine) {
-    showStatus('Offline—check connection!', 'error');
-    return;
-  }
-
-  els.send.disabled = true;
-  els.send.textContent = 'Sending...';
-
-  try {
-    const code = await generateUniqueCode();
-    const now = new Date().toISOString();
-    const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString(); // 15 minutes
-
-    let insertData = {
-      code,
-      type: state.inputType,
-      timestamp: now,
-      expires: expires
-    };
-
-    if (state.inputType === 'text') {
-      insertData.content = state.text;
-    } else {
-      const file = state.file;
-      if (file.size > 2 * 1024 * 1024) {
-        showStatus('File too large (Max 2MB)', 'error');
-        els.send.disabled = false;
-        els.send.textContent = 'Send';
-        return;
-      }
-
-      const { error: upErr } = await supabase.storage.from('files').upload(`${code}/${file.name}`, file);
-      if (upErr) throw upErr;
-
-      const { data: { publicUrl } } = supabase.storage.from('files').getPublicUrl(`${code}/${file.name}`);
-      insertData.url = publicUrl;
-      insertData.filename = file.name;
-    }
-
-    const { error } = await supabase.from('clips').insert(insertData);
-    if (error) throw error;
-
-    els.code.value = code;
-    showStatus(`Saved! Code: ${code}`, 'success');
-    state.mode = 'idle';
-
-
-    if (state.inputType === 'text') {
-      state.text = '';
-      els.text.value = '';
-    } else {
-      state.file = null;
-      els.fileIn.value = '';
-    }
-
-
-    if (state.inputType === 'text') {
-      state.text = '';
-      els.text.value = '';
-    } else {
-      state.file = null;
-      els.fileIn.value = '';
-    }
-  } catch (err) {
-    console.error(err);
-    showStatus('Upload failed: ' + err.message, 'error');
-  } finally {
-    els.send.disabled = false;
-    els.send.textContent = 'Send';
-    updateUI();
-  }
-}
-
-async function generateUniqueCode() {
-  const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
-  let code;
-  while (true) {
-    code = Array(3).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
-    const { data } = await supabase.from('clips').select('id').eq('code', code).maybeSingle();
-    if (!data) break;
-  }
-  return code;
-}
-
-async function retrieveContent(code) {
-  state.mode = 'retrieve';
-  updateUI();
-  showStatus('Retrieving...', 'info');
-
-  try {
-    const { data, error } = await supabase.from('clips').select('*').eq('code', code).maybeSingle();
-
-    if (error || !data) throw new Error('Code not found or expired');
-
-    if (new Date() > new Date(data.expires)) {
-      await supabase.from('clips').delete().eq('code', code); // Cleanup expired
-      throw new Error('Code expired');
-    }
-    if (data.type === 'text') {
-      els.text.value = data.content;
-      state.text = data.content;
-      state.inputType = 'text';
-    } else {
-      state.inputType = 'file';
-      els.download.href = data.url;
-      els.download.download = data.filename || 'download';
-      els.download.textContent = `Download ${data.filename}`;
-      state.file = { name: data.filename };
-    }
-
-    if (data.type === 'file') {
-      await supabase.from('clips').delete().eq('code', code);
-    }
-
-    if (data.type === 'file') {
-      const path = `${code}/${data.filename}`;
-      supabase.storage.from('files').remove([path]);
-    }
-
-    updateUI();
-    showStatus('Content retrieved!', 'success');
-
-  } catch (err) {
-    showStatus(err.message, 'error');
-    els.code.value = '';
-    state.code = '';
-    updateUI();
-  }
-}
-
-async function handleCopy() {
-  if (!els.text.value) return;
-  try {
-    await navigator.clipboard.writeText(els.text.value);
-    showStatus('Copied!', 'success');
-  } catch {
-    els.text.select();
-    document.execCommand('copy');
-    showStatus('Copied!', 'success');
-  }
+// Theme Management
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    
+    document.documentElement.setAttribute('data-theme', theme);
+    updateThemeIcon(theme);
 }
 
 function toggleTheme() {
-  state.theme = state.theme === 'light' ? 'dark' : 'light';
-
-  if (state.theme === 'dark') document.documentElement.classList.add('dark');
-  else document.documentElement.classList.remove('dark');
-
-
-  localStorage.setItem('clipboard_theme', state.theme);
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
 }
 
-function updateUI() {
-  const fileInputWrapper = document.getElementById('file-input-wrapper');
+function updateThemeIcon(theme) {
+    const icon = document.querySelector('.theme-icon');
+    icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
 
-  if (state.inputType === 'text') {
-    els.text.classList.remove('hidden');
-    fileInputWrapper.classList.add('hidden');
-    els.download.classList.add('hidden');
-    els.copy.disabled = false;
-    els.copy.classList.remove('opacity-0', 'pointer-events-none');
-    els.modes[0].checked = true;
-  } else {
-    els.text.classList.add('hidden');
-    if (state.mode === 'retrieve') {
-      fileInputWrapper.classList.add('hidden');
+themeToggle.addEventListener('click', toggleTheme);
+
+// Mode Toggle
+modeToggle.addEventListener('click', () => {
+    if (mode === 'receiver') {
+        switchToSender();
     } else {
-      fileInputWrapper.classList.remove('hidden');
+        switchToReceiver();
     }
-    if (state.mode === 'retrieve') {
-      els.download.classList.remove('hidden');
+});
+
+function switchToSender() {
+    mode = 'sender';
+    modeToggle.textContent = 'Switch to Receiver';
+    modeIndicator.textContent = 'You are in Sender Mode';
+    receiverView.classList.add('hidden');
+    senderView.classList.remove('hidden');
+    stopScanning();
+    registerAsSender();
+}
+
+function switchToReceiver() {
+    mode = 'receiver';
+    modeToggle.textContent = 'Become Sender';
+    modeIndicator.textContent = 'You are in Receiver Mode';
+    senderView.classList.add('hidden');
+    receiverView.classList.remove('hidden');
+    dataView.classList.add('hidden');
+    unregisterAsSender();
+    startScanning();
+    closePeerConnection();
+}
+
+// Peer Discovery
+async function startScanning() {
+    if (scanInterval) return;
+    
+    scanPeers();
+    scanInterval = setInterval(scanPeers, 3000);
+}
+
+function stopScanning() {
+    if (scanInterval) {
+        clearInterval(scanInterval);
+        scanInterval = null;
+    }
+}
+
+async function scanPeers() {
+    try {
+        const response = await fetch(`${WORKER_URL}/peers/${ROOM_ID}`);
+        const peers = await response.json();
+        
+        displayPeers(peers.filter(p => p.id !== peerId));
+    } catch (error) {
+        console.error('Scan error:', error);
+        peerList.innerHTML = '<div class="scanning">Connection error. Retrying...</div>';
+    }
+}
+
+function displayPeers(peers) {
+    if (peers.length === 0) {
+        peerList.innerHTML = '<div class="scanning">No peers detected</div>';
+        return;
+    }
+    
+    peerList.innerHTML = peers.map(peer => `
+        <div class="peer-item" data-peer-id="${peer.id}">
+            <div>
+                <div class="peer-name">Sender ${peer.id.substring(0, 8)}</div>
+                <div class="peer-status">Click to connect</div>
+            </div>
+        </div>
+    `).join('');
+    
+    document.querySelectorAll('.peer-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const targetPeerId = item.dataset.peerId;
+            connectToPeer(targetPeerId);
+        });
+    });
+}
+
+// Sender Registration
+async function registerAsSender() {
+    try {
+        await fetch(`${WORKER_URL}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roomId: ROOM_ID, peerId })
+        });
+        
+        startListeningForOffers();
+    } catch (error) {
+        console.error('Registration error:', error);
+    }
+}
+
+async function unregisterAsSender() {
+    try {
+        await fetch(`${WORKER_URL}/unregister`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roomId: ROOM_ID, peerId })
+        });
+    } catch (error) {
+        console.error('Unregistration error:', error);
+    }
+}
+
+// WebRTC Connection
+async function connectToPeer(targetPeerId) {
+    stopScanning();
+    peerList.innerHTML = '<div class="scanning">Connecting...</div>';
+    
+    peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    dataChannel = peerConnection.createDataChannel('data');
+    setupDataChannel();
+    
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    
+    const iceCandidates = [];
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            iceCandidates.push(event.candidate);
+        }
+    };
+    
+    await new Promise(resolve => {
+        if (peerConnection.iceGatheringState === 'complete') {
+            resolve();
+        } else {
+            peerConnection.onicegatheringstatechange = () => {
+                if (peerConnection.iceGatheringState === 'complete') {
+                    resolve();
+                }
+            };
+        }
+    });
+    
+    try {
+        const response = await fetch(`${WORKER_URL}/signal`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                roomId: ROOM_ID,
+                from: peerId,
+                to: targetPeerId,
+                type: 'offer',
+                offer: peerConnection.localDescription,
+                candidates: iceCandidates
+            })
+        });
+        
+        const { answer, candidates } = await response.json();
+        
+        await peerConnection.setRemoteDescription(answer);
+        for (const candidate of candidates) {
+            await peerConnection.addIceCandidate(candidate);
+        }
+    } catch (error) {
+        console.error('Connection error:', error);
+        peerList.innerHTML = '<div class="scanning">Connection failed. Retrying...</div>';
+        startScanning();
+    }
+}
+
+async function startListeningForOffers() {
+    const checkInterval = setInterval(async () => {
+        if (mode !== 'sender') {
+            clearInterval(checkInterval);
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${WORKER_URL}/poll/${ROOM_ID}/${peerId}`);
+            const signal = await response.json();
+            
+            if (signal && signal.type === 'offer') {
+                clearInterval(checkInterval);
+                await handleOffer(signal);
+            }
+        } catch (error) {
+            // Ignore polling errors
+        }
+    }, 1000);
+}
+
+async function handleOffer(signal) {
+    connectionStatus.textContent = 'Receiver connecting...';
+    
+    peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    
+    peerConnection.ondatachannel = (event) => {
+        dataChannel = event.channel;
+        setupDataChannel();
+    };
+    
+    await peerConnection.setRemoteDescription(signal.offer);
+    
+    for (const candidate of signal.candidates) {
+        await peerConnection.addIceCandidate(candidate);
+    }
+    
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    
+    const iceCandidates = [];
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            iceCandidates.push(event.candidate);
+        }
+    };
+    
+    await new Promise(resolve => {
+        if (peerConnection.iceGatheringState === 'complete') {
+            resolve();
+        } else {
+            peerConnection.onicegatheringstatechange = () => {
+                if (peerConnection.iceGatheringState === 'complete') {
+                    resolve();
+                }
+            };
+        }
+    });
+    
+    await fetch(`${WORKER_URL}/answer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            roomId: ROOM_ID,
+            from: peerId,
+            to: signal.from,
+            answer: peerConnection.localDescription,
+            candidates: iceCandidates
+        })
+    });
+}
+
+function setupDataChannel() {
+    dataChannel.onopen = () => {
+        if (mode === 'sender') {
+            connectionStatus.className = 'status-success';
+            connectionStatus.textContent = 'Connected to receiver!';
+            enableSenderControls();
+        } else {
+            peerList.innerHTML = '<div class="scanning status-success">Connected to sender!</div>';
+            dataView.classList.remove('hidden');
+        }
+    };
+    
+    dataChannel.onclose = () => {
+        if (mode === 'sender') {
+            connectionStatus.className = 'status-info';
+            connectionStatus.textContent = 'Receiver disconnected';
+            disableSenderControls();
+        } else {
+            peerList.innerHTML = '<div class="scanning">Connection closed</div>';
+            startScanning();
+        }
+    };
+    
+    dataChannel.onmessage = (event) => {
+        handleReceivedData(event.data);
+    };
+}
+
+function closePeerConnection() {
+    if (dataChannel) {
+        dataChannel.close();
+        dataChannel = null;
+    }
+    if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+    }
+}
+
+// Sender Controls
+function enableSenderControls() {
+    sendClipboard.disabled = false;
+    sendFile.disabled = false;
+    sendMessage.disabled = false;
+}
+
+function disableSenderControls() {
+    sendClipboard.disabled = true;
+    sendFile.disabled = true;
+    sendMessage.disabled = true;
+}
+
+sendClipboard.addEventListener('click', async () => {
+    try {
+        const text = await navigator.clipboard.readText();
+        sendData({ type: 'clipboard', content: text });
+    } catch (error) {
+        alert('Failed to read clipboard. Please grant permission.');
+    }
+});
+
+sendFile.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            sendData({
+                type: 'file',
+                name: file.name,
+                content: e.target.result
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+sendMessage.addEventListener('click', () => {
+    const text = messageInput.value.trim();
+    if (text) {
+        sendData({ type: 'message', content: text });
+        messageInput.value = '';
+    }
+});
+
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessage.click();
+    }
+});
+
+function sendData(data) {
+    if (dataChannel && dataChannel.readyState === 'open') {
+        dataChannel.send(JSON.stringify(data));
+    }
+}
+
+// Receiver Data Handling
+function handleReceivedData(dataStr) {
+    const data = JSON.parse(dataStr);
+    
+    const item = document.createElement('div');
+    item.className = 'data-item';
+    
+    const typeLabel = document.createElement('div');
+    typeLabel.className = 'data-type';
+    typeLabel.textContent = `${data.type.toUpperCase()}`;
+    
+    const content = document.createElement('div');
+    content.className = 'data-content';
+    
+    if (data.type === 'file') {
+        const link = document.createElement('a');
+        link.href = data.content;
+        link.download = data.name;
+        link.textContent = `📎 ${data.name}`;
+        link.style.color = 'var(--btn-primary-bg)';
+        content.appendChild(link);
     } else {
-      els.download.classList.add('hidden');
+        content.textContent = data.content;
     }
-
-    els.copy.disabled = true;
-    els.copy.classList.add('opacity-0', 'pointer-events-none');
-    els.modes[1].checked = true;
-  }
-  const isSend = state.mode === 'send';
-  els.send.disabled = !isSend;
-
-  els.copy.disabled = !state.text && state.inputType === 'text';
+    
+    item.appendChild(typeLabel);
+    item.appendChild(content);
+    receivedData.insertBefore(item, receivedData.firstChild);
 }
 
-function showStatus(msg, type) {
-  els.status.textContent = msg;
-
-  const baseClasses = 'fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium shadow-2xl transform transition-all duration-300 z-50 text-sm flex items-center gap-2';
-  const typeClasses = type === 'success'
-    ? 'bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/80 dark:text-green-100 dark:border-green-800'
-    : type === 'error'
-      ? 'bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/80 dark:text-red-100 dark:border-red-800'
-      : 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/80 dark:text-blue-100 dark:border-blue-800';
-
-  els.status.className = `${baseClasses} ${typeClasses} opacity-100 translate-y-0`; // Visible state
-
-  if (type === 'success') {
-    setTimeout(() => {
-      els.status.className = `${baseClasses} opacity-0 translate-y-20`; // Hidden state
-    }, 3000);
-  }
+// Utilities
+function generateId() {
+    return Math.random().toString(36).substring(2, 15);
 }
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (mode === 'sender') {
+        unregisterAsSender();
+    }
+    closePeerConnection();
+});
+
+disableSenderControls();
