@@ -1,239 +1,358 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-
+<html class="dark" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BroCode?</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Digital Fog | Local P2P Transfer</title>
+  <meta name="description" content="Digital Fog – seamless, encrypted local peer-to-peer file and clipboard sharing with a beautiful dark interface."/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
     tailwind.config = {
-      darkMode: 'class',
+      darkMode: "class",
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Outfit', 'sans-serif'],
-          },
           colors: {
-            primary: {
-              50: '#f7fee7',
-              100: '#E7FF9E',
-              200: '#d9f99d',
-              300: '#C2D685',
-              400: '#bef264',
-              500: '#98A869',
-              600: '#7d8c52',
-              700: '#535C39',
-              800: '#3f472b',
-              900: '#363d25',
-            },
-            dark: {
-              bg: '#171717',
-              card: '#262626',
-              input: '#404040',
-            }
+            "on-error": "#690005",
+            "surface-container-high": "#2a2a2a",
+            "surface-variant": "#353534",
+            "secondary-fixed-dim": "#b9d075",
+            "on-tertiary-fixed-variant": "#424a29",
+            "on-secondary-fixed-variant": "#3c4d00",
+            "surface-container-lowest": "#0e0e0e",
+            "inverse-primary": "#56642d",
+            "secondary": "#b9d075",
+            "on-primary-fixed": "#161f00",
+            "on-secondary-fixed": "#161e00",
+            "tertiary-fixed-dim": "#c1cba0",
+            "on-tertiary": "#2b3415",
+            "outline-variant": "#46483c",
+            "on-secondary-container": "#aec56b",
+            "secondary-fixed": "#d5ec8e",
+            "error": "#ffb4ab",
+            "primary": "#bdce8b",
+            "surface-dim": "#131313",
+            "inverse-surface": "#e5e2e1",
+            "on-primary": "#293502",
+            "surface": "#131313",
+            "surface-bright": "#393939",
+            "background": "#131313",
+            "surface-container-highest": "#353534",
+            "tertiary": "#c1cba0",
+            "primary-fixed": "#d9eaa5",
+            "tertiary-fixed": "#dde7ba",
+            "surface-tint": "#bdce8b",
+            "tertiary-container": "#9ca67d",
+            "on-tertiary-container": "#333b1c",
+            "error-container": "#93000a",
+            "on-background": "#e5e2e1",
+            "on-surface": "#e5e2e1",
+            "on-error-container": "#ffdad6",
+            "on-tertiary-fixed": "#171e03",
+            "on-primary-fixed-variant": "#3e4c17",
+            "on-primary-container": "#303c08",
+            "secondary-container": "#405200",
+            "inverse-on-surface": "#313030",
+            "outline": "#909284",
+            "on-secondary": "#283500",
+            "surface-container-low": "#1c1b1b",
+            "on-surface-variant": "#c6c8b8",
+            "primary-fixed-dim": "#bdce8b",
+            "surface-container": "#201f1f",
+            "primary-container": "#98a869"
+          },
+          borderRadius: {
+            DEFAULT: "1rem",
+            lg: "2rem",
+            xl: "3rem",
+            full: "9999px"
+          },
+          fontFamily: {
+            headline: ["Plus Jakarta Sans"],
+            body: ["Plus Jakarta Sans"],
+            label: ["Plus Jakarta Sans"]
           }
         }
       }
     }
   </script>
-  <style type="text/tailwindcss">
-    @layer base {
-      :root {
-        --color-text-base: 255, 255, 255;
-        --color-text-muted: 199, 210, 254;
-        --color-text-inverted: 79, 70, 229;
-        --color-fill: 67, 56, 202;
-        --color-button-accent: 255, 255, 255;
-        --color-button-accent-hover: 238, 242, 255;
-        --color-button-muted: 99, 102, 241;
-      }
-      .theme-swiss {
-        --color-text-base: 255, 255, 255;
-        --color-text-muted: 254, 202, 202;
-        --color-text-inverted: 220, 38, 38;
-        --color-fill: 185, 28, 28;
-        --color-button-accent: 255, 255, 255;
-        --color-button-accent-hover: 254, 242, 242;
-        --color-button-muted: 239, 68, 68;
-      }
-      .theme-neon {
-        --color-text-base: 17, 24, 2;
-        --color-text-muted: 47, 67, 6;
-        --color-text-inverted: 235, 250, 204;
-        --color-fill: 179, 255, 23;
-        --color-button-accent: 36, 52, 3;
-        --color-button-accent-hover: 55, 79, 5;
-        --color-button-muted: 212, 255, 122;
-      }
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #131313;
+      color: #E5E2E1;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
     }
-    @layer utilities {
-      .glass {
-        @apply bg-white/70 backdrop-blur-lg border border-white/20 dark:bg-neutral-900/70 dark:border-neutral-700/30;
-      }
-      .input-base {
-        @apply w-full p-4 rounded-xl border border-neutral-200 bg-white shadow-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-100 dark:shadow-none;
-      }
-      .btn-primary {
-        @apply px-6 py-3 rounded-xl bg-primary-500 text-lg font-medium hover:bg-primary-600 active:scale-95 transition-all duration-200 shadow-lg shadow-primary-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
-      }
-      .btn-secondary {
-        @apply px-4 py-2 rounded-lg bg-neutral-200 text-neutral-700 font-medium hover:bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-600 transition-all duration-200;
-      }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
-    
-    ::-webkit-scrollbar {
-      width: 8px;
+    /* Scanning ripple animation */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(189, 206, 139, 0.2);
+      animation: ripple-effect 4s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
-    ::-webkit-scrollbar-track {
-      @apply bg-transparent;
+    @keyframes ripple-effect {
+      0%   { transform: scale(0.5); opacity: 0; }
+      50%  { opacity: 0.5; }
+      100% { transform: scale(2.5); opacity: 0; }
     }
-    ::-webkit-scrollbar-thumb {
-      @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
+    .ripple:nth-child(2) { animation-delay: 1.3s; }
+    .ripple:nth-child(3) { animation-delay: 2.6s; }
+    /* Glassmorphism */
+    .glass-card {
+      background: rgba(38, 38, 38, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
+    .glass-panel {
+      background: rgba(42, 42, 42, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .fog-gradient {
+      background: radial-gradient(circle at center, rgba(189, 206, 139, 0.05) 0%, rgba(19, 19, 19, 0) 70%);
+    }
+    /* View containers — JS toggles display via style attribute */
+    .view { display: none; }
+    /* Received data items */
+    .received-item {
+      background: rgba(42,42,42,0.7);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .progress-bar-inner { transition: width 0.4s ease; }
+    #receivedDataList {
+      max-height: 260px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(189,206,139,0.2) transparent;
+    }
+    textarea { resize: none; }
   </style>
 </head>
+<body class="bg-surface text-on-surface min-h-screen selection:bg-primary/30">
 
-<body
-  class="bg-neutral-100 text-neutral-800 dark:bg-dark-bg dark:text-neutral-200 min-h-screen flex flex-col transition-colors duration-300">
-
-  <header class="glass sticky top-0 z-50">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="text-3xl pt-1"></span>
-        <h1
-          class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-300 dark:from-primary-400 dark:to-primary-200">
-          BroCode?
-        </h1>
+  <!-- ═══════════════════════════════════════════════════════ NAV ═══ -->
+  <header id="topNav" class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-6 bg-[#131313]/70 backdrop-blur-xl">
+    <div class="text-2xl font-bold tracking-tighter text-[#E5E2E1] flex items-center gap-2 font-headline">
+      <span class="material-symbols-outlined text-primary">blur_on</span>
+      Digital Fog
+    </div>
+    <div class="flex items-center gap-4">
+      <div id="identityChip" class="hidden items-center gap-2 bg-surface-container px-4 py-1.5 rounded-full border border-outline-variant/20 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse inline-block"></span>
+        <span id="navPeerName">—</span>
       </div>
-
-      <div class="flex items-center gap-3">
-        <button id="theme-toggle"
-          class="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
-          aria-label="Toggle Theme">
-          <svg class="w-6 h-6 text-primary-600 fill-current block dark:hidden" viewBox="0 0 20 20">
-            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-          </svg>
-          <svg class="w-6 h-6 text-primary-400 fill-current hidden dark:block" viewBox="0 0 20 20">
-            <path
-              d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-              fill-rule="evenodd" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-        <button id="about-btn" class="btn-secondary font-medium text-base">About</button>
-        <a href="https://microsoftedge.microsoft.com/addons/detail/bro-code-/fabilhfdamaalniodcpobfpbelpagiek"
-          target="_blank" class="btn-secondary font-medium text-base">Extension</a>
-      </div>
+      <button id="modeToggle" class="bg-primary text-on-primary font-bold px-6 py-2.5 rounded-full text-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(189,206,139,0.4)] hover:scale-105 active:scale-95">
+        Become Sender
+      </button>
     </div>
   </header>
 
-  <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
-
-    <div class="flex flex-col md:flex-row gap-6 h-full">
-
-      <div class="flex-1 flex flex-col gap-4">
-        <div class="p-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-xl inline-flex w-fit self-start mode-selector">
-          <label class="cursor-pointer">
-            <input type="radio" name="mode" value="text" class="peer sr-only" checked>
-            <span
-              class="px-5 py-2.5 rounded-lg text-base font-medium text-neutral-600 dark:text-neutral-400 peer-checked:bg-white dark:peer-checked:bg-neutral-700 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 peer-checked:shadow-sm transition-all flex items-center gap-2">
-              Text
-            </span>
-          </label>
-          <label class="cursor-pointer">
-            <input type="radio" name="mode" value="file" class="peer sr-only">
-            <span
-              class="px-5 py-2.5 rounded-lg text-base font-medium text-neutral-600 dark:text-neutral-400 peer-checked:bg-white dark:peer-checked:bg-neutral-700 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 peer-checked:shadow-sm transition-all flex items-center gap-2">
-              File
-            </span>
-          </label>
-        </div>
-
-        <div id="input-container" class="relative group flex-1 flex flex-col">
-          <textarea id="text-area" class="input-base flex-1 min-h-[300px] resize-y font-mono text-base leading-relaxed"
-            placeholder="Paste your code or text here..."></textarea>
-
-          <div id="file-input-wrapper"
-            class="hidden h-64 w-full rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/20 flex flex-col items-center justify-center text-slate-400 cursor-not-allowed select-none transition-all relative">
-            <input type="file" id="file-input" class="hidden" disabled>
-            <div class="text-5xl mb-4 opacity-50">🚧</div>
-            <h3 class="text-xl font-bold text-slate-500 dark:text-slate-400">Coming Soon</h3>
-            <p class="text-sm font-medium text-slate-400 mt-1">File sharing is currently under maintenance.</p>
-          </div>
-
-          <button id="copy-btn"
-            class="absolute top-3 right-3 p-2 bg-neutral-200/80 backdrop-blur hover:bg-white text-neutral-700 rounded-lg shadow-sm text-xs font-semibold uppercase tracking-wide transition-all z-10 disabled:opacity-0"
-            disabled>
-            Copy
-          </button>
-        </div>
-
-        <a id="download-btn" href="#" target="_blank" class="hidden btn-primary text-center">Download File</a>
-      </div>
-
-      <div class="md:w-80 flex flex-col gap-4">
-        <div
-          class="p-6 rounded-2xl bg-white dark:bg-dark-card shadow-xl shadow-neutral-300/60 dark:shadow-none border border-neutral-100 dark:border-neutral-800 flex flex-col gap-4 sticky top-24">
-          <label class="text-base font-bold uppercase text-neutral-400 tracking-wider">Retrieval Code</label>
-
-          <div class="relative">
-            <input id="code-input" type="text" maxlength="3" placeholder="---"
-              class="w-full h-20 text-center text-5xl font-bold tracking-[0.5em] rounded-xl bg-neutral-100 dark:bg-neutral-900 border-2 border-transparent focus:border-primary-500 focus:bg-white dark:focus:bg-black transition-all outline-none uppercase text-neutral-800 dark:text-white placeholder-neutral-300 dark:placeholder-neutral-700">
-          </div>
-
-          <p class="text-xs text-center text-neutral-400">Enter a 3-digit code to receive</p>
-
-          <div class="h-px bg-neutral-100 dark:bg-neutral-700 my-2"></div>
-
-          <button id="send-btn" class="btn-primary w-full text-lg shadow-xl shadow-primary-500/20" disabled>
-            Send
-          </button>
+  <!-- ═══════════════════════════ VIEW: SCANNING ══════════════════════ -->
+  <main id="scanningView" class="view" style="display:flex; position:relative; height:100vh; width:100%; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(circle at center, rgba(189,206,139,0.05) 0%, rgba(19,19,19,0) 70%);">
+    <div class="relative flex items-center justify-center w-96 h-96">
+      <div class="ripple w-full h-full"></div>
+      <div class="ripple w-full h-full"></div>
+      <div class="ripple w-full h-full"></div>
+      <div class="relative z-10 w-32 h-32 rounded-full bg-surface-container-high flex items-center justify-center shadow-[0_0_48px_rgba(189,206,139,0.06)]">
+        <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+          <span class="material-symbols-outlined text-3xl">cell_tower</span>
         </div>
       </div>
-
     </div>
-
-    <div id="status-message"
-      class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-sm flex items-center gap-2">
+    <div class="mt-16 text-center space-y-4">
+      <h1 class="text-on-surface font-headline text-3xl md:text-5xl font-extrabold tracking-tight">Scanning for nearby senders...</h1>
+      <div class="flex items-center justify-center gap-3">
+        <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+        <p class="text-on-surface-variant font-label text-sm tracking-widest uppercase opacity-60">Visible to everyone in your network</p>
+      </div>
     </div>
-
+    <!-- Identity badge -->
+    <div class="absolute bottom-32 left-12 p-6 rounded-xl bg-surface-container-high/40 backdrop-blur-md border border-white/5 max-w-xs">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">fingerprint</span>
+        </div>
+        <div>
+          <div class="text-[0.6875rem] font-label text-primary uppercase tracking-[0.2em] mb-0.5">Your Identity</div>
+          <div id="scanningPeerName" class="text-lg font-bold font-headline text-on-surface">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- Ambient glow -->
+    <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+      <div class="absolute top-1/4 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-1/4 -left-20 w-[30rem] h-[30rem] bg-secondary/5 rounded-full blur-[150px]"></div>
+    </div>
   </main>
 
-  <div id="about-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-    <div class="modal-overlay absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="modal-backdrop"></div>
-    <div
-      class="modal-content relative bg-white dark:bg-dark-card w-full max-w-md p-8 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700">
-      <button
-        class="modal-close absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl transition-colors">&times;</button>
+  <!-- ═══════════════════════════ VIEW: RECEIVER (peers found) ══════════ -->
+  <main id="receiverView" class="view" style="position:relative; width:100%; height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:0 1.5rem;">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="text-center mb-16 space-y-2">
+      <span class="text-primary text-[0.6875rem] font-bold uppercase tracking-[0.2em]">Nearby Entities</span>
+      <h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter text-on-surface">Available Peers</h1>
+      <p class="text-on-surface-variant/60 max-w-md mx-auto text-base">Select a device to establish an encrypted tunnel for file reception.</p>
+    </div>
+    <div id="peerGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl"></div>
+    <div class="absolute left-12 bottom-32 opacity-20 hidden lg:block"><div class="w-32 h-32 border-t border-l border-primary/40 rounded-tl-xl"></div></div>
+    <div class="absolute right-12 top-32 opacity-20 hidden lg:block"><div class="w-32 h-32 border-b border-r border-primary/40 rounded-br-xl"></div></div>
+  </main>
 
-      <h2 class="text-2xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-yellow-500">
-        About Bro Code</h2>
-      <div class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed">
-        <p>Created because I was too lazy to log in to WhatsApp just to share a snippet or file between devices. Built
-          to be a quick, login-free "clipboard in the cloud". The extension is ready and can be accessed from the
-          extension button.</p>
-        <div
-          class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm border border-slate-100 dark:border-slate-700">
-          <p class="font-medium text-slate-800 dark:text-slate-200 mb-1">Future Plans:</p>
-          <p>Make the file sharing feature work (working on it!)</p>
+  <!-- ═══════════════════════════ VIEW: SENDER ══════════════════════════ -->
+  <main id="senderView" class="view" style="position:relative; width:100%; height:100vh; align-items:center; justify-content:center; padding:1.5rem; background:radial-gradient(circle at 50% 50%, rgba(189,206,139,0.05) 0%, rgba(19,19,19,0) 70%);">
+    <div class="absolute top-1/4 left-10 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-1/4 right-10 w-64 h-64 bg-primary-container/10 rounded-full blur-[80px] pointer-events-none"></div>
+    <div class="glass-panel w-full max-w-2xl rounded-xl p-10 flex flex-col gap-8 shadow-2xl relative z-10">
+      <!-- Status header -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="relative flex items-center justify-center">
+            <div class="w-3 h-3 bg-primary rounded-full"></div>
+            <div class="absolute w-3 h-3 bg-primary rounded-full animate-ping opacity-75"></div>
+          </div>
+          <span class="text-on-surface-variant font-headline font-semibold tracking-tight">Sender Mode</span>
         </div>
-        <p class="text-right text-sm font-medium text-primary-500">- shuzers</p>
+        <div class="text-right">
+          <p class="text-[0.65rem] uppercase tracking-[0.2em] text-on-surface/40 font-bold">Network ID</p>
+          <p id="senderNetworkId" class="text-primary font-mono text-sm">—</p>
+        </div>
+      </div>
+      <!-- Connection status -->
+      <div id="senderStatus" class="text-xs uppercase tracking-widest text-on-surface-variant/60 font-bold flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-outline inline-block"></span>
+        <span id="senderStatusText">Waiting for receiver to connect…</span>
+      </div>
+      <!-- Clipboard -->
+      <div class="flex flex-col gap-4">
+        <label class="text-[0.6875rem] uppercase tracking-widest text-on-surface/50 font-bold ml-1">Quick Share</label>
+        <button id="sendClipboard" class="bg-primary-container/20 hover:bg-primary-container/30 text-primary border border-primary/10 rounded-full py-4 px-8 flex items-center justify-center gap-3 transition-all duration-300">
+          <span class="material-symbols-outlined">content_paste</span>
+          <span class="font-bold tracking-tight">Share Clipboard</span>
+        </button>
+      </div>
+      <!-- Message textarea -->
+      <div class="flex flex-col gap-4">
+        <label class="text-[0.6875rem] uppercase tracking-widest text-on-surface/50 font-bold ml-1">Message or URL</label>
+        <div class="relative">
+          <textarea id="messageInput" rows="3" class="w-full bg-[#404040]/30 border border-outline-variant/20 rounded-lg p-6 text-on-surface placeholder:text-on-surface/20 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all text-base" placeholder="Type something to broadcast to nearby nodes…"></textarea>
+          <button id="sendMessage" class="absolute bottom-3 right-3 bg-primary text-on-primary rounded-full px-4 py-1.5 text-xs font-bold tracking-tight hover:shadow-[0_0_15px_rgba(189,206,139,0.3)] transition-all">Send</button>
+        </div>
+      </div>
+      <!-- File upload zone -->
+      <div class="flex flex-col gap-4">
+        <label class="text-[0.6875rem] uppercase tracking-widest text-on-surface/50 font-bold ml-1">Assets</label>
+        <div id="dropZone" class="border-2 border-dashed border-primary/20 rounded-xl p-10 flex flex-col items-center justify-center gap-4 hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer group">
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings:'FILL' 1;">cloud_upload</span>
+          </div>
+          <div class="text-center">
+            <p class="text-on-surface font-semibold text-lg">Drop files to fog</p>
+            <p class="text-on-surface/40 text-sm">or click to browse — maximum 2 GB</p>
+          </div>
+        </div>
+        <input type="file" id="fileInput" class="hidden"/>
+      </div>
+      <!-- Footer meta -->
+      <div class="flex justify-between items-center pt-2 opacity-40">
+        <div class="flex gap-6 items-center">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">wifi</span>
+            <span class="text-[0.65rem] font-bold uppercase tracking-tighter">Local Area Only</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            <span class="text-[0.65rem] font-bold uppercase tracking-tighter">End-to-End</span>
+          </div>
+        </div>
+        <span class="text-[0.65rem] font-bold">V 2.4.1</span>
       </div>
     </div>
-  </div>
+  </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const { createClient } = supabase;
-      window.supabase = createClient(
-        'https://qmxzgkibbsfcyzcdjmbf.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFteHpna2liYnNmY3l6Y2RqbWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1Njg3MDUsImV4cCI6MjA4MjE0NDcwNX0.XdONWIPIbzzuZk8RqAQQakfrmhZe_41r3Gsv4x29lMA'
-      );
-    });
-  </script>
+  <!-- ═══════════════════════════ VIEW: TRANSFER ════════════════════════ -->
+  <main id="transferView" class="view" style="position:relative; width:100%; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:8rem 1.5rem 10rem; background:radial-gradient(circle at 50% 50%, rgba(189,206,139,0.05) 0%, rgba(19,19,19,1) 70%);">
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+      <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]"></div>
+    </div>
+    <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-start relative z-10">
+      <!-- Left: peer identity -->
+      <div class="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">
+        <div class="relative">
+          <div class="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping opacity-75"></div>
+          <div class="w-36 h-36 rounded-full bg-surface-container-high flex items-center justify-center shadow-2xl relative">
+            <span id="transferPeerIcon" class="material-symbols-outlined text-6xl text-primary" style="font-variation-settings:'FILL' 1;">laptop_mac</span>
+          </div>
+          <div class="absolute -bottom-2 -right-2 bg-primary text-on-primary px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest">Connected</div>
+        </div>
+        <div class="space-y-2">
+          <p id="transferDirectionLabel" class="text-primary text-[0.6875rem] font-bold tracking-[0.2em] uppercase">Connected to</p>
+          <h1 id="transferPeerName" class="text-5xl font-extrabold tracking-tighter text-on-surface">—</h1>
+          <p class="text-on-surface-variant text-base max-w-sm">Secure peer-to-peer tunnel established via local node.</p>
+        </div>
+        <button id="disconnectBtn" class="text-on-surface-variant text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">close</span>Disconnect
+        </button>
+      </div>
+      <!-- Right: action cards -->
+      <div class="lg:col-span-7 space-y-6">
+        <!-- Active transfer card -->
+        <div id="transferCard" class="glass-panel rounded-xl p-8 border border-white/5 shadow-2xl hidden">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-lg bg-primary-container/30 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary">description</span>
+            </div>
+            <div>
+              <h3 id="transferFileName" class="font-bold text-xl text-on-surface">—</h3>
+              <p id="transferMeta" class="text-on-surface-variant text-sm font-medium">Incoming</p>
+            </div>
+          </div>
+          <div class="space-y-3 mb-6">
+            <div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+              <div id="progressBar" class="progress-bar-inner h-full bg-primary-container rounded-full shadow-[0_0_10px_rgba(152,168,105,0.4)]" style="width:0%"></div>
+            </div>
+            <div class="flex justify-between items-center px-1">
+              <span id="progressLabel" class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">0% Complete</span>
+              <span id="transferStatus" class="text-[10px] font-bold text-primary uppercase tracking-widest">Receiving…</span>
+            </div>
+          </div>
+        </div>
+        <!-- Received data list -->
+        <div class="glass-panel rounded-xl p-6 border border-white/5">
+          <p class="text-[0.6875rem] font-bold text-primary uppercase tracking-[0.2em] mb-4">Received</p>
+          <div id="receivedDataList" class="space-y-3">
+            <p class="text-on-surface-variant/40 text-sm italic">Nothing received yet…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════ FOOTER ════════════ -->
+  <footer class="fixed bottom-0 left-0 w-full z-40 flex justify-center items-center py-6 opacity-60 bg-transparent pointer-events-none">
+    <div class="flex items-center gap-4 bg-surface-container-low px-6 py-2 rounded-full border border-outline-variant/10">
+      <div class="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#BDCE8B]"></div>
+      <span id="footerPeerName" class="text-[#BDCE8B] font-medium text-[0.6875rem] uppercase tracking-widest">Digital Fog</span>
+      <span class="h-3 w-[1px] bg-outline-variant/40 mx-1"></span>
+      <span class="text-[#E5E2E1]/40 font-medium text-[0.6875rem] uppercase tracking-widest">Local P2P</span>
+    </div>
+  </footer>
+
   <script src="app.js"></script>
 </body>
-
 </html>
